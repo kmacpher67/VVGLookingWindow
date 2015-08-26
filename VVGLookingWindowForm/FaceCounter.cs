@@ -13,7 +13,6 @@ namespace Ungu_CV1
     class FaceCounter
     {
         public Capture cap;
-        public HaarCascade haar;
         public CascadeClassifier face_cascade;
         public int NumberOfFacesCounted;
         public double NumberOfFacesCounting;
@@ -39,7 +38,7 @@ namespace Ungu_CV1
         {
             // there's only one channel (greyscale), hence the zero index
             //var faces = nextFrame.DetectHaarCascade(haar)[0];
-            using (Image<Bgr, byte> nextFrame = cap.QueryFrame())
+            using (Image<Bgr, byte> nextFrame = cap.QueryFrame().ToImage<Bgr, byte>())
             {
                 lastImageCaptured = nextFrame;
                 grayframe = nextFrame.Convert<Gray, byte>();

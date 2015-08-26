@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using System.Drawing;
-using System.Diagnostics;
-using Emgu.CV.GPU;
+using Emgu.CV.Cuda;
 
 namespace Ungu_CV1
 {
@@ -23,15 +22,15 @@ namespace Ungu_CV1
             Rectangle[] regions;
 
             //check if there is a compatible GPU to run pedestrian detection
-            if (GpuInvoke.HasCuda)
+            if (CudaInvoke.HasCuda)
             {  //this is the GPU version
-                using (GpuHOGDescriptor des = new GpuHOGDescriptor())
+                using (CudaHOG des = new CudaHOG())
                 {
-                    des.SetSVMDetector(GpuHOGDescriptor.GetDefaultPeopleDetector());
+                    des.SetSVMDetector(CudaHOG.GetDefaultPeopleDetector());
 
                     watch = Stopwatch.StartNew();
-                    using (GpuImage<Bgr, Byte> gpuImg = new GpuImage<Bgr, byte>(image))
-                    using (GpuImage<Bgra, Byte> gpuBgra = gpuImg.Convert<Bgra, Byte>())
+                    using (CudaImage<Bgr, Byte> gpuImg = new CudaImage<Bgr, byte>(image))
+                    using (CudaImage<Bgra, Byte> gpuBgra = gpuImg.Convert<Bgra, Byte>())
                     {
                         regions = des.DetectMultiScale(gpuBgra);
                     }
