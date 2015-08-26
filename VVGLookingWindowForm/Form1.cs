@@ -108,7 +108,7 @@ namespace Ungu_CV1
             try
             {
                 watch.Start();
-                Debug.WriteLine("has Cude GPU really? = " + GpuInvoke.HasCuda);
+                Debug.WriteLine("has Cude Cuda really? = " + CudaInvoke.HasCuda);
                 // adjust path to find your xml
                 //face_cascade = new CascadeClassifier("haar\\haarcascade_frontalface_alt2.xml");
                 //haarcascade_frontalface_default.xml
@@ -149,8 +149,8 @@ namespace Ungu_CV1
             
                 listBoxPictureList.SelectedIndex = 0;
                 imgVanGoh = getSelectedVanGo();
-                this.imageBoxOrig.Image = imgOriginal.Resize(imageBoxOrig.Width, imageBoxOrig.Height, INTER.CV_INTER_AREA, true);
-                this.imageBoxProcesssed.Image = imgVanGoh.Copy().Resize(imageBoxOrig.Width, imageBoxOrig.Height, INTER.CV_INTER_AREA, true); 
+                this.imageBoxOrig.Image = imgOriginal.Resize(imageBoxOrig.Width, imageBoxOrig.Height, Inter.Cubic, true);
+                this.imageBoxProcesssed.Image = imgVanGoh.Copy().Resize(imageBoxOrig.Width, imageBoxOrig.Height, Inter.Cubic, true); 
                 configureWindows();
             // face counter 
 
@@ -250,18 +250,18 @@ namespace Ungu_CV1
         void capturePicture()
         {
             //Debug.WriteLine("processFrameAndUpdateGUI");
-            imgOriginal = capWebcam.QueryFrame(); // gets next frame
+            imgOriginal = capWebcam.QueryFrame().ToImage<Bgr, Byte>(); // gets next frame
             if (imgOriginal == null) return;
             // (double)imageBoxOrig.Size.Width
             resizeImage = maxWidth / (double)imgOriginal.Size.Width;
-            imgOriginal = imgOriginal.Resize(resizeImage, INTER.CV_INTER_CUBIC);
+            imgOriginal = imgOriginal.Resize(resizeImage, Inter.Cubic);
             imageBoxOrig.Image =  processImage(imgOriginal);
         }
 
         Image<Bgr, byte> processImage(Image<Bgr, byte> imgOrig)
         {
             Image<Bgr, byte> procImage = null;
-            Image<Gray, Byte> grayScale = null;
+            //Image<Gray, Byte> grayScale = null;
             //imgProcessed = imgOrig.InRange(new Bgr(0, 0, 175), new Bgr(100, 100, 256));
             //grayScale = imgOrig.Convert<Gray, Byte>();
             //grayScale = grayScale.SmoothGaussian(49);  // x and y size of the filter calll
@@ -469,7 +469,7 @@ namespace Ungu_CV1
                 //this.imageBoxProcesssed.Image = 
                     //processImage(new Image<Bgr, Byte>(imageBoxOrig.Image.Bitmap));
                 resizeImage = maxWidth / (double)imgOriginal.Size.Width;
-                imgOriginal = imgOriginal.Resize(resizeImage, INTER.CV_INTER_CUBIC);
+                imgOriginal = imgOriginal.Resize(resizeImage, Inter.Cubic);
                 imageBoxOrig.Image = processImage(imgOriginal);
             }
             textBox1.Text = " " + this.listBoxClassifier.SelectedItem.ToString() +"\n \r counted="+this.NumberOfFaces +"\\r \\n  Avg=" + this.NumberOfFacesSmooth;
@@ -483,7 +483,7 @@ namespace Ungu_CV1
             //textBox1.AppendText(" current image fc=" + fc.NumberOfFacesCounted + " smoothed=" + NumberOfFacesSmooth);
 
             resizeImage = maxWidth / (double)imgOriginal.Size.Width;
-            imgOriginal = imgOriginal.Resize(resizeImage, INTER.CV_INTER_CUBIC);
+            imgOriginal = imgOriginal.Resize(resizeImage, Inter.Cubic);
             imageBoxOrig.Image = processImage(imgOriginal);
         }
 
@@ -560,7 +560,7 @@ namespace Ungu_CV1
             String imageFileName = listBoxPictureList.SelectedItem.ToString();
             Debug.WriteLine("listBoxPictureList_SelectedIndexChanged=" + imageFileName + sender + e);
             Image<Bgr, Byte> img1 = new Image<Bgr, Byte>(imageFileName);
-            imageBoxOrig.Image = img1.Resize(imageBoxOrig.Width, imageBoxOrig.Height, INTER.CV_INTER_AREA, true);
+            imageBoxOrig.Image = img1.Resize(imageBoxOrig.Width, imageBoxOrig.Height, Inter.Cubic, true);
             //Application.Idle -= processFrameAndUpdateGUI
             if (!blnCaptureingInProcess)
             {
@@ -568,7 +568,7 @@ namespace Ungu_CV1
                    // processImage(new Image<Bgr, Byte>(imageBoxOrig.Image.Bitmap));
 
                     resizeImage = maxWidth / (double)imgOriginal.Size.Width;
-                    imgOriginal = imgOriginal.Resize(resizeImage, INTER.CV_INTER_CUBIC);
+                    imgOriginal = imgOriginal.Resize(resizeImage, Inter.Cubic);
                     imageBoxOrig.Image = processImage(imgOriginal);
             }
 
@@ -612,7 +612,7 @@ namespace Ungu_CV1
                     //processImage(new Image<Bgr, Byte>(imageBoxOrig.Image.Bitmap));
 
                     resizeImage = maxWidth / (double)imgOriginal.Size.Width;
-                    imgOriginal = imgOriginal.Resize(resizeImage, INTER.CV_INTER_CUBIC);
+                    imgOriginal = imgOriginal.Resize(resizeImage, Inter.Cubic);
                     imageBoxOrig.Image = processImage(imgOriginal);
             }
         }
@@ -630,7 +630,7 @@ namespace Ungu_CV1
                     capWebcam = new Capture(); // get standard video in if available, otherwise horrible error will occur. BUTTHEAD
 
 
-            imgOriginal = capWebcam.QueryFrame(); // gets first frame
+                imgOriginal = capWebcam.QueryFrame().ToImage<Bgr, Byte>(); // gets first frame
 
             if (imgOriginal == null) return;
                 this.imageBoxOrig.Image = imgOriginal;

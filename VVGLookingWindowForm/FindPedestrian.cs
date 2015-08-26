@@ -5,6 +5,8 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using System.Drawing;
 using Emgu.CV.Cuda;
+using Emgu.CV.Util;
+using Emgu.CV.CvEnum;
 
 namespace Ungu_CV1
 {
@@ -24,15 +26,18 @@ namespace Ungu_CV1
             //check if there is a compatible GPU to run pedestrian detection
             if (CudaInvoke.HasCuda)
             {  //this is the GPU version
-                using (CudaHOG des = new CudaHOG())
+                using (CudaHOG des = new CudaHOG(new Size(64, 128), new Size(16, 16), new Size(8, 8), new Size(8, 8)))
                 {
-                    des.SetSVMDetector(CudaHOG.GetDefaultPeopleDetector());
+                    des.SetSVMDetector(des.GetDefaultPeopleDetector());
 
                     watch = Stopwatch.StartNew();
                     using (CudaImage<Bgr, Byte> gpuImg = new CudaImage<Bgr, byte>(image))
                     using (CudaImage<Bgra, Byte> gpuBgra = gpuImg.Convert<Bgra, Byte>())
+                    using (VectorOfRect vr = new VectorOfRect())
                     {
-                        regions = des.DetectMultiScale(gpuBgra);
+                        CudaInvoke.CvtColor(gpuBgra, gpuBgra, ColorConversion.Bgr2Bgra);
+                        des.DetectMultiScale(gpuBgra,vr);
+                        regions = vr.ToArray();
                     }
                 }
             }
@@ -41,9 +46,15 @@ namespace Ungu_CV1
                 using (HOGDescriptor des = new HOGDescriptor())
                 {
                     des.SetSVMDetector(HOGDescriptor.GetDefaultPeopleDetector());
+                    //load the image to umat so it will automatically use opencl is available
+                    UMat umat = image.ToUMat();
 
                     watch = Stopwatch.StartNew();
-                    regions = des.DetectMultiScale(image);
+                    //regions = des.DetectMultiScale(image);
+                    MCvObjectDetection[] results = des.DetectMultiScale(umat);
+                    regions = new Rectangle[results.Length];
+                    for (int i = 0; i < results.Length; i++)
+                        regions[i] = results[i].Rect;
                 }
             }
             watch.Stop();
