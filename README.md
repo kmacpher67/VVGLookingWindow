@@ -8,6 +8,9 @@ http://www.emgu.com/wiki/index.php/Download_And_Installation#Raspbian_.28Raspber
 To install mono
 
 ```
+sudo apt-get update 
+sudo apt-get upgrade 
+sudo apt-get install cmake
 sudo apt-get install mono-complete
 sudo apt-get install git
 git clone git://git.code.sf.net/p/emgucv/code emgucv 
@@ -17,7 +20,7 @@ cd platforms/raspian/
 sudo ./apt_install_dependency
 ./cmake_configure
 cd ../..
-sudo ./make 
+sudo make 
 sudo chown -R pi:pi * 
 ```
 The mono-complete takes about 5 minutes. 
