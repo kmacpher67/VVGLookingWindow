@@ -6,6 +6,7 @@ using Emgu.CV.VideoSurveillance;
 using Emgu.CV.Util;
 using Emgu.Util;
 using System;
+using System.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,7 +44,7 @@ namespace Ungu_CV1
         public double averagetotalPixelCount =1;
 
         private IFindFaces FaceDetector;
-        public bool tryUseCuda = true; 
+        public bool HasCuda = true; 
 
         public Image<Bgr, Byte> ImageFrameLast;
         public Image<Bgr, Byte> ImageMotionLast;
@@ -60,6 +61,8 @@ namespace Ungu_CV1
 
         public FaceCapture(string faceTrainingFile, string eyeTrainingFile, double scale, int neighbors, int minSize)
         {
+            loadConfig();
+
             FaceTrainingFile = faceTrainingFile;
             EyeTrainingFile = eyeTrainingFile;
             Scale = scale;
@@ -68,7 +71,7 @@ namespace Ungu_CV1
             FaceMaxSize = 200;
             try
             {
-                if (tryUseCuda && CudaInvoke.HasCuda)
+                if (HasCuda && CudaInvoke.HasCuda)
                 {
                     FaceDetector = new FaceDetectCuda();
                 }
@@ -89,6 +92,11 @@ namespace Ungu_CV1
                 maxDelta, //in second, maxDelta for cvCalcMotionGradient
                 minDelta); //in second, minDelta for cvCalcMotionGradient
             //capture = new Capture();
+        }
+
+        private void loadConfig()
+        {
+
         }
 
         public void StartCapture()
